@@ -1,0 +1,12 @@
+version: '2.2'
+services:
+
+  storeapi:
+      build:
+        context: ./
+        dockerfile: Dockerfile
+      container_name: storeapi
+      volumes:
+      ports:
+        - "5000:5000"
+      restart: always
