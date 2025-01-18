@@ -11,7 +11,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the project source code from the local host to the filesystem of the container at the working directory.
-COPY ..
+COPY . .
 
 # Expose port 
 EXPOSE 5000
