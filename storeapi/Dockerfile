@@ -17,4 +17,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY ./api .
 
 # Command to run the application
-CMD [ "python3"; "app.py"]
+CMD [ "python3", "./app/app.py"]
