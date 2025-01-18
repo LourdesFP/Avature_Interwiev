@@ -1,6 +1,4 @@
-python3
-mongodb
-python3-pip
-flask
+Flask
 Flask-PyMongo
+pymongo
 mergedeep
