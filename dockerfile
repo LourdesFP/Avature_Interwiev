@@ -1,4 +1,4 @@
-# FROM python:3
+# FROM image python:3
 FROM python:3
 
 # Create dir to work and set it as working directory
@@ -12,6 +12,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the project source code from the local host to the filesystem of the container at the working directory.
 COPY ./api .
+
+# Expose port 
+EXPOSE 5000
 
 # Command to run the application
 CMD [ "python3", "app.py"]
