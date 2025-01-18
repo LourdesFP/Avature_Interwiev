@@ -2,8 +2,8 @@
 FROM python:3
 
 # Set environment variables
-ENV MONGO_URI=mongodb://127.0.0.1:27017
-ENV MONGO_DB=restdb
+#ENV MONGO_URI=mongodb://127.0.0.1:27017
+#ENV MONGO_DB=restdb
 
 # Create dir to work and set it as working directory
 WORKDIR /app
@@ -17,4 +17,4 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 COPY ./api .
 
 # Command to run the application
-CMD [ "python3", "./app/app.py"]
+CMD [ "python3", "./app.py"]
