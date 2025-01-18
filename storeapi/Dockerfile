@@ -2,7 +2,8 @@
 FROM python:3
 
 # Set environment variables
-ENV MONGO_URI=mongodb://127.0.0.1:27017 \
+# Set environment variables
+ENV MONGO_URI=mongodb://127.0.0.1:27017
 ENV MONGO_DB=restdb
 
 # Create dir to work and set it as working directory
