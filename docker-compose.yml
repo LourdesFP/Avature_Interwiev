@@ -21,4 +21,3 @@ services:
 
 volumes:
   mongo_data:
-      restart: always

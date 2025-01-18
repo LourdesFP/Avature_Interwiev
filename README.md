@@ -1,64 +1,178 @@
-# 🐳 Virtualization<br><small>[Avature](https://careers.avature.net/en_US/main/Dashboard#who-we-are) Home Project</small>
+# storeapi
 
-![Python Version](https://img.shields.io/badge/Python->=3.8.10-informational?style=flat-square&logo=python)
-![pip3 Version](https://img.shields.io/badge/pip3->=22.2.1-informational?style=flat-square&logo=python)
+Small Flask API for educational purposes.
 
-## The task
+## Description
 
-You have been asked to implement a deployment of a Python application called
-“[storeapi](/storeapi/)” using Docker. Please do the following exercises:
+A key-value store API server written in Python, with a MongoDB backend.
 
-### 1. Write a Dockerfile
+## Configuration
 
-The `storeapi` documentation explains how to install this application directly to a server or VM. Your goal is to design this installation using Docker, by writing a Dockerfile.
+The API server is configured through environment variables.
 
-### 2. How would you deploy it?
+| Environment Variable | Value               | Default Value             |
+|----------------------|---------------------|---------------------------|
+| MONGO_URI            | mongodb://IP:PORT   | mongodb://127.0.0.1:27017 |
+| MONGO_DB             | Mongo Database Name | restdb                    |
 
-Since the application has multiple elements, some orchestration needs to be applied for the solution to work properly. This could be accomplished using Docker Compose, Docker Swarm, k8s, etc.
+## Installation
 
-### 3. Python knowledge
+### Dependencies
 
-Some basic programming knowledge might be required in order to hack or troubleshoot the application code.
+* python3
+* mongodb
+* python3-pip (optional)
+* virtualenv (optional)
 
-The `storeapi` app implements different methods to interact with a database. You can consume information and inject information. So, additionally, if you have experience coding, you could modify the application code by adding one more method. For example, a “ping” functionality could be added, but it could also be something a little more complex. It’s up to you!
+### Deployment using virtualenv
 
-## General suggestions
+```bash
+virtualenv -p python3.8 venv/py38
+source venv/py38/bin/activate
+pip install -r requirements.txt
+cd api
+python -m flask run --host=0.0.0.0
+```
 
-- Before you start working on the Docker deployment, you might want to make sure the application works outside a container.
-- Take your time to organize the project as you like.
-- Feel free to use any tools to write or debug your code.
+## A sample installation done over an Ubuntu box
 
-## F.A.Q.
+### DB
 
-### Do I need to create a UI?
+```bash
+wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+sudo apt-get update
+sudo apt-get install -y mongodb-org
+sudo systemctl start mongod
+```
 
-We will only assess the backend, but you can build one if you feel like it.
+### APP
 
-### Does the app require authentication?
+```bash
+sudo apt install python3 python3-pip virtualenv git
+git clone https://github.com/avatureta/hp-cloud-virt
+cd storeapi
+virtualenv -p python3.8 venv/py38
+source venv/py38/bin/activate
+pip install -r requirements.txt
+cd api
+python -m flask run --host=0.0.0.0
 
-No, it doesn't.
+```
 
-### Can I use an external framework?
+### Tests
 
-Yes, feel free to choose any framework that suits your needs.
+```bash
+curl --location --request POST 'http://127.0.0.1:5000/api/add' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "key":"TestKey",
+    "data": {"Details":"Test Details","Attribute1":"Some attribute"}
+}'
 
-### What language should I comment my code in?
+curl --location --request GET 'http://127.0.0.1:5000/api/get'
+```
 
-English, please.
+## Usage
 
-### Can I add technical documentation or a README?
+This api has few methods to add / get / update information.
 
-Anything you feel will expand on your thought process behind the implemented solution will be a great addition.
+### /api/get
 
-### Do I have to show my code running during the technical interview?
+GET method to retrieve all keys in our database.
 
-It's expected that after completing and delivering the home project, it'll be showcased during the technical interview. Please get things ready so you have whatever components you need running on your own computer before the meeting (for example, Docker, minikube/k3d/MicroK8s/others).
+```bash
+$ curl --location --request GET 'http://<IP>:<PORT>/api/get'
+{
+    "result": [
+        {
+            "data": {
+                "KeyData1": 2,
+                "KeyData2": 11,
+                "KeyData3": 1,
+                "KeyData4": "Avature"
+            },
+            "key": "Epsilon",
+            "tags": {}
+        },
+        {
+            "data": {
+                "KeyData11": "Testing",
+                "KeyData12": "Data",
+                "KeyData13": "MoreData"
+            },
+            "key": "Delta",
+            "tags": {}
+        }
+    ]
+}
+```
 
-### Can I add changes after submitting the project?
+### /api/get/KEY
 
-Of course! Feel free to add whatever you consider will display your
-knowledge and experience.
+GET method to retrieve an specific key in our database.
 
-### Can I change the API port?
+```bash
+$ curl --location --request GET 'http://<IP>:<PORT>/api/get/Epsilon'
+{
+    "result": {
+        "data": {
+            "KeyData1": 2,
+            "KeyData2": 11,
+            "KeyData3": 1,
+            "KeyData4": "Avature"
+        },
+        "key": "Epsilon",
+        "tags": {}
+    }
+}
+```
 
-If 5000 doesn’t work on your OS, feel free to change it.
+### /api/add
+
+POST method to add or replace a key.
+
+```bash
+$ curl --location --request POST 'http://<IP>:<PORT>/api/add' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "key":"Delta",
+    "data": {"KeyData11":"Testing","KeyData12":"Data","KeyData13":"MoreData"}
+}'
+{
+    "result": {
+        "data": {
+            "KeyData11": "Testing",
+            "KeyData12": "Data",
+            "KeyData13": "MoreData"
+        },
+        "key": "Delta",
+        "tags": {}
+    }
+}
+```
+
+### /api/update
+
+PUT method to merge in an existing key and create a new one if not.
+
+```bash
+$ curl --location --request PUT 'http://<IP>:<PORT>/api/update' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "key":"Delta",
+    "data": {"KeyData11":"Overwrite Key","KeyData14":"NEW KEY Data"}
+}'
+{
+    "result": {
+        "data": {
+            "KeyData11": "Overwrite Key",
+            "KeyData12": "Data",
+            "KeyData13": "MoreData",
+            "KeyData14": "NEW KEY Data"
+        },
+        "key": "Delta",
+        "tags": {}
+    }
+}
+```
